@@ -1,0 +1,99 @@
+﻿<UserControl x:Class="WpfApp1.toDoList"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:converters="clr-namespace:WpfApp1.Converters"
+             xmlns:local="clr-namespace:WpfApp1.Models"
+             xmlns:domain="clr-namespace:WpfApp1.Models"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:system="clr-namespace:System;assembly=mscorlib"
+             mc:Ignorable="d" 
+             Background="WhiteSmoke"
+             d:DataContext="{d:DesignInstance domain:ToDoListViewModel, d:IsDesignTimeCreatable=False}"
+             d:DesignHeight="300" d:DesignWidth="300">
+
+        <Grid>
+            <Grid.Resources>
+                <converters:StrikeConverter x:Key="StrikeConverter"></converters:StrikeConverter>
+            </Grid.Resources>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="150"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"></RowDefinition>
+                <RowDefinition Height="Auto"></RowDefinition>
+                <RowDefinition Height="Auto"></RowDefinition>
+            </Grid.RowDefinitions>
+            <materialDesign:DialogHost DialogClosing="DialogHost_OnDialogClosing" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.ColumnSpan="2">
+                <StackPanel>
+                    <Grid Width="300">  
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="150"/>
+                            <ColumnDefinition Width="150"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBox Text="{Binding Search, Mode=TwoWay}"  TextAlignment="Center" Grid.Column="0"/>
+                        <Button Command="{Binding SearchIt}" Grid.Column="1" >Search</Button>
+                </Grid>
+
+                <Button Width="Auto" Margin="10 5 10 5" Command="{x:Static materialDesign:DialogHost.OpenDialogCommand}">Add</Button>
+                </StackPanel>
+            <materialDesign:DialogHost.DialogContent>
+
+                <StackPanel Margin="16">
+                    <TextBlock>Add a new todo</TextBlock>
+                    <TextBox Margin="0 8 0 12" HorizontalAlignment="Stretch" Text="{Binding Input}"/>
+                    <DatePicker Margin="0 12 0 12" SelectedDate="{Binding Date}" Width="100" materialDesign:HintAssist.Hint="Pick Date" Style="{StaticResource MaterialDesignFloatingHintDatePicker}"/>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" >
+                        <Button Style="{StaticResource MaterialDesignFlatButton}"
+                                        IsDefault="True"
+                                        Margin="0 8 8 0"
+                                        Command="materialDesign:DialogHost.CloseDialogCommand"
+                        >
+                            <Button.CommandParameter>
+                                <system:Boolean>True</system:Boolean>
+                            </Button.CommandParameter>
+                            ACCEPT
+                        </Button>
+                        <Button Style="{StaticResource MaterialDesignFlatButton}" 
+                                        IsCancel="True"
+                                        Margin="0 8 8 0"
+                                        Command="materialDesign:DialogHost.CloseDialogCommand"
+                        >
+                            <Button.CommandParameter>
+                                <system:Boolean>False</system:Boolean>
+                            </Button.CommandParameter>
+                            CANCEL
+                        </Button>
+                    </StackPanel>
+                </StackPanel>
+            </materialDesign:DialogHost.DialogContent>
+        </materialDesign:DialogHost>
+        <ListView Grid.Row="2" Grid.ColumnSpan="2" ItemsSource="{Binding SearchTodo, Mode=TwoWay}">
+            <ListView.ItemTemplate>
+                    <DataTemplate>
+                    <Grid>
+                        <Grid.ContextMenu>
+                            <ContextMenu>
+                                <MenuItem Header="Delete" Command="{Binding AddRemoved}"/>
+                            </ContextMenu>
+                        </Grid.ContextMenu>
+                        <Grid.RowDefinitions>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="270"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock TextDecorations="{Binding ElementName=Box, Path=IsChecked, Converter={StaticResource StrikeConverter}}" HorizontalAlignment="Left" Text="{Binding Text}" Grid.Row="0" Grid.Column="0" />
+                            <CheckBox Name="Box"  Command="{Binding AddCompleted}" IsChecked="{Binding IsCompleted}" HorizontalAlignment="Right" Grid.Column="1" Grid.RowSpan="2"/>
+                            <TextBlock Text="{Binding Date, Mode=TwoWay}" Grid.Row="1" Grid.Column="0"/>
+                    </Grid>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+        </Grid>
+</UserControl>
